@@ -12,6 +12,7 @@
 # Login ulang: admin / (kosong)
 # Set identitas
 /system identity set name="Router-UKK"
+/user password
 # _______________________________________
 
 # 2. VLAN INTERFACE
