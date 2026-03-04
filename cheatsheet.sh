@@ -1,8 +1,9 @@
 #!/bin/bash
 #############################################################################
-# ARNOLOKA UKK Cheatsheet - ENHANCED VERSION WITH COMMAND EXTRACTOR
-# Features: View in less → Extract commands → Edit in nano → Execute
+# ARNOLOKA UKK Cheatsheet - FINAL VERSION (MD FILES)
+# Features: View guides → Extract commands → Edit in nano → Execute
 # No Mouse Required | No tmux Required | Pure CLI Keyboard Workflow
+# File Format: .md (Markdown)
 #############################################################################
 
 REPO="https://raw.githubusercontent.com/Galih-Arno/ukk-tjkt-cheatsheet/main"
@@ -40,7 +41,7 @@ get_file() {
     fi
 }
 
-# Extract commands from content (filter explanation lines)
+# Extract commands from markdown content
 extract_commands() {
     local file=$1
     local output=$2
@@ -53,12 +54,12 @@ extract_commands() {
     echo "# WARNING: Review before executing!" >> "$output"
     echo "" >> "$output"
     
-    # Extract command lines (grep common command patterns)
-    get_file "$file" | grep -E "^[[:space:]]*(sudo|apt|systemctl|mysql|curl|wget|nano|chmod|chown|echo|mkdir|cat|touch|zcat|openssl|a2enmod|a2ensite|named-check|snmpwalk|zabbix_get|ip |ping |nslookup |dig |ufw )" >> "$output" 2>/dev/null
+    # Extract command lines (filter markdown syntax)
+    get_file "$file" | grep -v "^#" | grep -v "^>" | grep -v "^|" | grep -v "^-" | grep -v "^$" | grep -v "^\`\`\`" | grep -E "(sudo|apt|systemctl|mysql|curl|wget|nano|chmod|chown|echo|mkdir|cat|touch|zcat|openssl|a2enmod|a2ensite|named-check|snmpwalk|zabbix_get|^ip |^ping |^nslookup |^dig |ufw )" >> "$output" 2>/dev/null
     
-    # If no commands extracted, get all content
-    if [ ! -s "$output" ] || [ $(wc -l < "$output") -le 5 ]; then
-        get_file "$file" >> "$output"
+    # If no commands extracted, get content without markdown
+    if [ ! -s "$output" ] || [ $(wc -l < "$output") -le 3 ]; then
+        get_file "$file" | sed 's/^#\+ //g' | sed 's/\*\*//g' | sed 's/\`//g' >> "$output"
     fi
     
     chmod +x "$output"
@@ -117,8 +118,25 @@ view() {
     echo -e "${B}══════════════════════════════════════════${N}"
     echo ""
     
+    # Check if file exists first
+    local cached="$CACHE/$(echo $file | tr '/' '_')"
+    if ! curl -sf "$REPO/$file" -o "$cached" 2>/dev/null || [ ! -s "$cached" ]; then
+        echo -e "${R}❌ Error: Cannot load $file${N}"
+        echo ""
+        echo "Possible causes:"
+        echo "  1. File does not exist in GitHub repo"
+        echo "  2. Internet connection issue"
+        echo "  3. Wrong file path"
+        echo ""
+        echo "Check URL: $REPO/$file"
+        echo ""
+        echo -e "${Y}Press Enter to continue...${N}"
+        read dummy
+        return 1
+    fi
+    
     # Get and display content in less
-    get_file "$file" | less -R
+    cat "$cached" | less -R
     
     # After viewing, offer extract option
     echo ""
@@ -140,8 +158,7 @@ extract_and_edit() {
     local title=$2
     
     # Generate output filename
-    local basename=$(basename "$file" .txt)
-    basename=$(basename "$basename" .md)
+    local basename=$(basename "$file" .md)
     local output="$HOME/ukk-${basename}.sh"
     
     echo ""
@@ -304,6 +321,7 @@ main() {
     echo "  ✓ Extract commands to editable file"
     echo "  ✓ Edit in nano (keyboard-friendly)"
     echo "  ✓ Execute or copy commands"
+    echo "  ✓ No mouse required!"
     echo ""
     echo -e "${Y}Press Enter to start...${N}"
     read dummy
@@ -318,17 +336,17 @@ main() {
         choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')
         
         case "$choice" in
-            1) view "router/01-vlan-ip.txt" "Router: VLAN & IP" ;;
-            2) view "router/02-dhcp-nat.txt" "Router: DHCP & NAT" ;;
-            3) view "router/03-firewall.txt" "Router: Firewall" ;;
-            4) view "switch/01-bridge-vlan.txt" "Switch: Bridge VLAN" ;;
-            5) view "server/01-netplan.txt" "Server: Netplan" ;;
-            6) view "server/02-dns-bind9.txt" "Server: DNS Bind9" ;;
-            7) view "server/03-web-https.txt" "Server: Apache HTTPS" ;;
-            8) view "server/04-zabbix-setup.txt" "Server: Zabbix" ;;
-            9) view "testing/01-verify-commands.txt" "Testing" ;;
-            a) view "docs/kebijakan-keamanan.txt" "Kebijakan Keamanan" ;;
-            b) view "docs/troubleshooting.txt" "Troubleshooting" ;;
+            1) view "router/01-vlan-ip.md" "Router: VLAN & IP" ;;
+            2) view "router/02-dhcp-nat.md" "Router: DHCP & NAT" ;;
+            3) view "router/03-firewall.md" "Router: Firewall" ;;
+            4) view "switch/01-bridge-vlan.md" "Switch: Bridge VLAN" ;;
+            5) view "server/01-netplan.md" "Server: Netplan" ;;
+            6) view "server/02-dns-bind9.md" "Server: DNS Bind9" ;;
+            7) view "server/03-web-https.md" "Server: Apache HTTPS" ;;
+            8) view "server/04-zabbix-setup.md" "Server: Zabbix" ;;
+            9) view "testing/01-verify-commands.md" "Testing" ;;
+            a) view "docs/kebijakan-keamanan.md" "Kebijakan Keamanan" ;;
+            b) view "docs/troubleshooting.md" "Troubleshooting" ;;
             u) update_cache ;;
             q) clear; echo -e "${G}╔══════════════════════════════════════════╗${N}"
                        echo -e "${G}║${N}  ${C}🚀 Good luck with UKK!${N}                  ${G}║${N}"
