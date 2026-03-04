@@ -1,7 +1,7 @@
 # 📘 Cloud Cheatsheet
 
 > Interactive CLI UKK By Galih Gratia Arno  
-> Access: CLI • Browser • Mobile
+> Access: TERMINAL/CLI (LINUX), POWERSHELL/WSL (WINDOWS)
 
 ## 🚀 Quick Install
 
