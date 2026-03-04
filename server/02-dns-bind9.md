@@ -121,3 +121,4 @@ nslookup google.com 192.168.30.10
 
 # 📌 CATATAN: Serial number di zone file harus 
 # di-increment setiap edit. Format: YYYYMMDDNN
+╭∩╮( •̀_•́ )╭∩╮ 🤟GG-Arno
