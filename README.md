@@ -6,4 +6,6 @@
 ## 🚀 Quick Install
 
 ```bash
-curl -sL arno-ukk.vercel.app/install.sh | bash
+curl -sL https://arno-ukk.vercel.app/cheatsheet.sh -o ~/.ukk-cheatsheet.sh
+chmod +x ~/.ukk-cheatsheet.sh
+bash ~/.ukk-cheatsheet.sh
