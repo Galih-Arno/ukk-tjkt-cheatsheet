@@ -1,121 +1,100 @@
-# 💻 Server Config: Network Setup (Netplan)
+═══════════════════════════════════════════
+SERVER CONFIG: NETWORK SETUP (NETPLAN)
+═══════════════════════════════════════════
 
-> **Target:** Ubuntu Server 24.04 LTS  
-> ⚠️ **GATEWAY HARUS 192.168.30.1** (bukan 192.168.10.1!)
+Target: Ubuntu Server 24.04 LTS
 
----
+⚠️ PENTING: GATEWAY HARUS 192.168.30.1
+           (BUKAN 192.168.10.1!)
 
-## 1. Cek Nama Interface
+───────────────────────────────────────
 
-```bash
-# Lihat nama network interface
-ip a
+1. CEK NAMA INTERFACE
+───────────────────────────────────────
 
-# Output contoh:
-# 2: enp0s25: <BROADCAST,MULTICAST,UP,LOWER_UP> ...
-#     inet 192.168.30.10/24 ...
+Jalankan perintah:
 
-# Catat nama interface (misal: enp0s25)
-```
+    ip a
 
----
+Output contoh:
 
-## 2. Edit Netplan Configuration
+    2: enp0s25: <BROADCAST,MULTICAST,UP,LOWER_UP>
+       inet 192.168.30.10/24 ...
 
-```bash
-sudo nano /etc/netplan/00-installer-config.yaml
-```
+Catat nama interface (misal: enp0s25)
 
-**Paste konten ini (sesuaikan nama interface):**
+───────────────────────────────────────
 
-```yaml
-network:
-  version: 2
-  ethernets:
-    enp0s25:  # ⚠️ GANTI dengan nama interface Anda (cek 'ip a')
-      dhcp4: no
-      addresses: [192.168.30.10/24]
-      routes:
-        - to: default
-          via: 192.168.30.1  # ⚠️ HARUS 30.1 (Gateway VLAN 30), BUKAN 10.1!
-      nameservers:
-        addresses: [127.0.0.1, 8.8.8.8]  # Lokal DNS first, fallback ke Google
-```
+2. EDIT NETPLAN CONFIGURATION
+───────────────────────────────────────
 
-### ⚠️ PENTING: Indentasi & Syntax
-- Gunakan **SPASI** (bukan TAB) untuk indentasi
-- YAML sensitif terhadap spasi: `addresses`, `routes`, `nameservers` harus sejajar
-- Setelah edit, save: `Ctrl+O` → `Enter` → `Ctrl+X`
+    sudo nano /etc/netplan/00-installer-config.yaml
 
----
+Paste konten ini (sesuaikan nama interface):
 
-## 3. Apply Configuration
+    network:
+      version: 2
+      ethernets:
+        enp0s25:
+          dhcp4: no
+          addresses: [192.168.30.10/24]
+          routes:
+            - to: default
+              via: 192.168.30.1
+          nameservers:
+            addresses: [127.0.0.1, 8.8.8.8]
 
-```bash
-# Apply netplan
-sudo netplan apply
+⚠️ GANTI "enp0s25" dengan nama interface Anda!
+   Cek dengan perintah: ip a
 
-# Jika error, debug dengan:
-sudo netplan --debug apply
-```
+───────────────────────────────────────
 
----
+3. APPLY CONFIGURATION
+───────────────────────────────────────
 
-## 4. Verifikasi Network
+    sudo netplan apply
 
-```bash
-# Cek IP address
-ip a show enp0s25
-# Harus muncul: inet 192.168.30.10/24
+Jika ada error, cek syntax:
 
-# Cek routing table
-ip route show
-# Harus muncul:
-# default via 192.168.30.1 dev enp0s25
-# 192.168.30.0/24 dev enp0s25 proto kernel scope link src 192.168.30.10
+    sudo netplan --debug apply
 
-# Test ping gateway
-ping 192.168.30.1
-# Harus: Reply ✅
+───────────────────────────────────────
 
-# Test ping internet
-ping 8.8.8.8
-# Harus: Reply ✅ (jika Router NAT sudah benar)
-```
+4. VERIFIKASI
+───────────────────────────────────────
 
----
+Cek routing table:
 
-## 5. Test DNS Resolution
+    ip route show
 
-```bash
-# Test DNS ke server lokal (Bind9)
-nslookup www.lab-smk.xyz 127.0.0.1
-# Harus return: Address: 192.168.30.10
+Harus muncul:
 
-# Test DNS ke Router (jika allow-remote-requests=yes)
-nslookup google.com 192.168.30.1
-# Harus return: IP Google
-```
+    default via 192.168.30.1 dev enp0s25
 
----
+Test ping gateway:
 
-## ⚠️ Troubleshooting Netplan
+    ping 192.168.30.1
 
-| Masalah | Solusi |
-|---------|--------|
-| `Error in network definition` | Cek indentasi spasi, pastikan YAML valid |
-| Gateway tidak reachable | Pastikan `via: 192.168.30.1` (bukan 10.1!) |
-| Internet tidak jalan | Cek Router: `/ip route print` ada default route, NAT aktif |
-| DNS timeout | Cek `/etc/resolv.conf`, pastikan nameserver terisi |
+Harus: Reply ✅
 
-### Quick Fix Gateway Salah
-```bash
-# Jika terlanjur set gateway 192.168.10.1, perbaiki:
-sudo nano /etc/netplan/00-installer-config.yaml
-# Ubah: via: 192.168.10.1 → via: 192.168.30.1
-sudo netplan apply
-```
+Test ping internet:
 
----
+    ping 8.8.8.8
 
-> 📌 **Catatan:** Netplan config hanya efektif setelah `sudo netplan apply`. Restart server tidak diperlukan.
+Harus: Reply ✅
+
+───────────────────────────────────────
+
+⚠️ TROUBLESHOOTING
+───────────────────────────────────────
+
+Problem: Gateway tidak reachable
+Solusi:  Pastikan via: 192.168.30.1 (bukan 10.1!)
+
+Problem: Internet tidak jalan
+Solusi:  Cek Router NAT & Default Route
+
+Problem: DNS tidak resolve
+Solusi:  Cek /etc/resolv.conf, pastikan nameserver terisi
+
+═══════════════════════════════════════════
