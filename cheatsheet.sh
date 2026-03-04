@@ -64,10 +64,12 @@ KEYBOARD NAVIGATION:
   Ctrl+O   : Save (if you edit)
 
 TIPS:
-  • Read carefully before copying commands
-  • Search with Ctrl+W for keywords
-  • Copy: Select text + Ctrl+Shift+C (in most terminals)
-  • This is NOT a script - do NOT execute this file!
+  • Baca pelan-pelan sebelum copy paste perintah yang kamu butuhkan
+  • Gunakan Ctrl+W untuk mencari kata perintah yang kamu butuhkan
+  • Untuk memilih perintah yang kamu butuhkan atau Blok text tekan: shift + [tombol arah] 
+  • Untuk Copy Text tekan: ctrl+shift+c
+  • Untuk Paste Text tekan: ctrl+shift+v
+  • Ini bukan sebuah KODE - tidak perlu mengeksekusinya!
 ═══════════════════════════════════════════
 
 
