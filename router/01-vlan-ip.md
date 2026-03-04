@@ -82,9 +82,8 @@ Solusi:  Cek /ip address print - pastikan IP terassign
 Problem: Tidak bisa ping dari client
 Solusi:  Pastikan client dapat IP DHCP atau set static
 
-═══════════════════════════════════════════
 ╭∩╮( •̀_•́ )╭∩╮ Arno
-═══════════════════════════════════════════
+════════════════════════════════
 
 
 ═══════════════════════════════════════════
