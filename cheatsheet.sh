@@ -1,12 +1,10 @@
 #!/bin/bash
-# ARNOLOKA UKK Cheatsheet - Stable Interactive Version
-# NO CLEAR SCREEN - Works perfectly with stdin
+# ARNOLOKA UKK Cheatsheet - FIXED VERSION
 
 REPO="https://raw.githubusercontent.com/Galih-Arno/ukk-tjkt-cheatsheet/main"
 CACHE="$HOME/.ukk-cache"
 mkdir -p "$CACHE" 2>/dev/null
 
-# Simple color codes
 G='\033[0;32m'
 Y='\033[1;33m'
 B='\033[0;34m'
@@ -16,7 +14,6 @@ N='\033[0m'
 get_file() {
     local file=$1
     local cached="$CACHE/$(echo $file | tr '/' '_')"
-    
     curl -sf "$REPO/$file" -o "$cached" 2>/dev/null && cat "$cached" && return 0
     [ -f "$cached" ] && echo -e "${Y}[Offline]${N}" && cat "$cached" && return 0
     echo -e "${R}Error: Cannot fetch $file${N}"
@@ -58,17 +55,15 @@ show_menu() {
 view() {
     local file=$1
     local title=$2
-    
     echo ""
     echo -e "${B}>>> $title${N}"
     echo ""
-    
     if get_file "$file" | less -R; then
         echo ""
         echo -e "${Y}Tip: /keyword = search | q = quit | Enter = back${N}"
     fi
     echo ""
-    read -p "Press Enter to continue..."
+    read -p "Press Enter to continue..." dummy
 }
 
 update_all() {
@@ -80,7 +75,7 @@ update_all() {
     done
     echo -e "${G}Done! Cache: $CACHE${N}"
     echo ""
-    read -p "Press Enter to continue..."
+    read -p "Press Enter to continue..." dummy
 }
 
 # WELCOME
@@ -88,14 +83,16 @@ echo ""
 echo -e "${G}Welcome to ARNOLOKA UKK Cheatsheet!${N}"
 echo "Repo: github.com/Galih-Arno/ukk-tjkt-cheatsheet"
 echo ""
-read -p "Press Enter to start..."
+read -p "Press Enter to start..." dummy
 
 # MAIN LOOP
 while true; do
     show_menu
-    read -p "Choose menu: " choice
+    echo -n -e "${G}➤ Choose menu: ${N}"
+    read choice
+    choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')
     
-    case $choice in
+    case "$choice" in
         1) view "router/01-vlan-ip.md" "Router: VLAN & IP" ;;
         2) view "router/02-dhcp-nat.md" "Router: DHCP & NAT" ;;
         3) view "router/03-firewall.md" "Router: Firewall" ;;
@@ -105,10 +102,10 @@ while true; do
         7) view "server/03-web-https.md" "Server: Apache HTTPS" ;;
         8) view "server/04-zabbix-setup.md" "Server: Zabbix" ;;
         9) view "testing/01-verify-commands.md" "Testing Commands" ;;
-        [Aa]) view "docs/kebijakan-keamanan.md" "Kebijakan Keamanan" ;;
-        [Bb]) view "docs/troubleshooting.md" "Troubleshooting" ;;
-        [Uu]) update_all ;;
-        [Qq]) echo -e "${G}Good luck with UKK!${N}"; exit 0 ;;
+        a) view "docs/kebijakan-keamanan.md" "Kebijakan Keamanan" ;;
+        b) view "docs/troubleshooting.md" "Troubleshooting" ;;
+        u) update_all ;;
+        q) echo -e "${G}Good luck with UKK!${N}"; exit 0 ;;
         *) echo -e "${R}Invalid choice!${N}"; sleep 1 ;;
     esac
 done
