@@ -1,59 +1,24 @@
 #!/bin/bash
 #############################################################################
-# ARNOLOKA UKK Cheatsheet - SIMPLE NANO VERSION
+# ARNOLOKA UKK Cheatsheet - WORKING VERSION
 # Workflow: Pilih Menu → Langsung Nano → Baca/Copy → Ctrl+X → Balik Menu
-# No Mouse Required | Full Content Save | Clean & Simple
 #############################################################################
 
 REPO="https://raw.githubusercontent.com/Galih-Arno/ukk-tjkt-cheatsheet/main"
-CACHE="$HOME/.ukk-cache"
 WORK="$HOME/.ukk-work"
-mkdir -p "$CACHE" "$WORK" 2>/dev/null
+mkdir -p "$WORK" 2>/dev/null
 
 # Colors
 G='\033[0;32m'
 Y='\033[1;33m'
 B='\033[0;34m'
 R='\033[0;31m'
-C='\033[0;36m'
 N='\033[0m'
 
 #############################################################################
-# HELPER FUNCTIONS
+# OPEN FILE IN NANO
 #############################################################################
 
-# Get file from GitHub or cache
-get_file() {
-    local file=$1
-    local cached="$CACHE/$(echo $file | tr '/' '_')"
-    
-    if [ ! -f "$cached" ] || [ $(find "$cached" -mmin +60 2>/dev/null) ]; then
-        curl -sf "$REPO/$file" -o "$cached" 2>/dev/null
-    fi
-    
-    if [ -s "$cached" ]; then
-        cat "$cached"
-        return 0
-    else
-        return 1
-    fi
-}
-
-# Clean markdown for better nano reading
-clean_md() {
-    sed -e 's/^###* /  /g' \
-        -e 's/^##* /  /g' \
-        -e 's/\*\*\([^*]*\)\*\*/\1/g' \
-        -e 's/\*\([^*]*\)\*/\1/g' \
-        -e 's/^\`[^`]*\`//g' \
-        -e 's/\`[^`]*\`/\1/g' \
-        -e 's/^> /  │ /g' \
-        -e 's/^---*/═══════════════════════════════════════════/g' \
-        -e 's/^- /  • /g' \
-        -e '/^```/d' | cat -s
-}
-
-# Save full content and open in nano
 open_in_nano() {
     local file=$1
     local title=$2
@@ -62,10 +27,27 @@ open_in_nano() {
     local basename=$(basename "$file" .md)
     local output="$WORK/${basename}.txt"
     
-    # Create header
-    cat > "$output" << HEADER
+    echo ""
+    echo -e "${G}📥 Loading guide...${N}"
+    
+    # Download directly from GitHub
+    if curl -sf "$REPO/$file" -o "$output" 2>/dev/null; then
+        
+        # Check if file has content
+        if [ -s "$output" ]; then
+            local lines=$(wc -l < "$output")
+            local size=$(du -h "$output" | cut -f1)
+            
+            echo -e "${G}✅ Loaded: $lines lines ($size)${N}"
+            echo ""
+            echo -e "${Y}Opening in nano...${N}"
+            sleep 1
+            
+            # Add header using sed (insert at beginning)
+            local temp=$(mktemp)
+            cat > "$temp" << HEADER
 ═══════════════════════════════════════════
-$TITLE
+$title
 ═══════════════════════════════════════════
 Source: $file
 Generated: $(date)
@@ -90,16 +72,23 @@ TIPS:
 
 
 HEADER
-    
-    # Get and clean content
-    get_file "$file" | clean_md >> "$output" 2>/dev/null
-    
-    if [ -s "$output" ]; then
-        # Clear screen and open nano
-        clear
-        nano "$output"
+            cat "$output" >> "$temp"
+            mv "$temp" "$output"
+            
+            # Clear screen and open nano
+            clear
+            nano "$output"
+        else
+            echo -e "${R}❌ Error: File is empty!${N}"
+            echo "URL: $REPO/$file"
+            sleep 2
+        fi
     else
-        echo -e "${R}Error: Cannot load content${N}"
+        echo -e "${R}❌ Error: Cannot download file!${N}"
+        echo "URL: $REPO/$file"
+        echo ""
+        echo "Test manually:"
+        echo "  curl -I $REPO/$file"
         sleep 2
     fi
 }
@@ -137,35 +126,29 @@ show_menu() {
     echo "  [B] Troubleshooting"
     echo ""
     echo "──────────────────────────────────────"
-    echo -e "${B}[U]${N} Update Cache  ${B}[Q]${N} Quit"
+    echo -e "${B}[U]${N} Test Connection  ${B}[Q]${N} Quit"
     echo ""
 }
 
 #############################################################################
-# UPDATE CACHE FUNCTION
+# TEST CONNECTION
 #############################################################################
 
-update_cache() {
+test_connection() {
     clear
     echo ""
-    echo -e "${G}🔄 Updating all files...${N}"
+    echo -e "${G}🔄 Testing connection to GitHub...${N}"
     echo ""
     
-    for f in README.md router/01-vlan-ip.md router/02-dhcp-nat.md router/03-firewall.md switch/01-bridge-vlan.md server/01-netplan.md server/02-dns-bind9.md server/03-web-https.md server/04-zabbix-setup.md testing/01-verify-commands.md docs/kebijakan-keamanan.md docs/troubleshooting.md; do
-        printf "  %-40s " "$f"
-        if curl -sf "$REPO/$f" -o "$CACHE/$(echo $f | tr '/' '_')" 2>/dev/null; then
-            if [ -s "$CACHE/$(echo $f | tr '/' '_')" ]; then
-                echo -e "${G}OK${N}"
-            else
-                echo -e "${R}EMPTY${N}"
-            fi
+    for f in router/01-vlan-ip.md server/04-zabbix-setup.md; do
+        echo -n "$f: "
+        if curl -sf -o /dev/null "$REPO/$f"; then
+            echo -e "${G}OK${N}"
         else
             echo -e "${R}FAIL${N}"
         fi
     done
     
-    echo ""
-    echo -e "${G}✅ Done!${N}"
     echo ""
     echo -e "${Y}Press Enter to continue...${N}"
     read dummy
@@ -216,7 +199,7 @@ main() {
             9) open_in_nano "testing/01-verify-commands.md" "TESTING & VERIFICATION" ;;
             a) open_in_nano "docs/kebijakan-keamanan.md" "KEBIJAKAN KEAMANAN" ;;
             b) open_in_nano "docs/troubleshooting.md" "TROUBLESHOOTING" ;;
-            u) update_cache ;;
+            u) test_connection ;;
             q) clear
                echo -e "${G}╔══════════════════════════════════════════╗${N}"
                echo -e "${G}║${N}  ${C}🚀 Good luck with UKK!${N}                  ${G}║${N}"
