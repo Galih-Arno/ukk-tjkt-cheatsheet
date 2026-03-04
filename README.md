@@ -1,6 +1,6 @@
-# 📘 ArnoLogika - Cloud Cheatsheet
+# 📘 Cloud Cheatsheet
 
-> Interactive CLI Cheatsheet for UKK TJKT 2026  
+> Interactive CLI UKK By Galih Gratia Arno  
 > Access: CLI • Browser • Mobile
 
 ## 🚀 Quick Install
