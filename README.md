@@ -11,6 +11,34 @@ chmod +x ~/.ukk-cheatsheet.sh
 bash ~/.ukk-cheatsheet.sh
 ```
 
+## Hapus versi lama dan cache
+```bash
+rm -f ~/.ukk-cheatsheet.sh
+rm -rf ~/.ukk-work
+```
+## Download versi baru
+```bash
+curl -sL https://arno-ukk.vercel.app/cheatsheet.sh -o ~/.ukk-cheatsheet.sh
+```
+
+## Make executable
+```bash
+chmod +x ~/.ukk-cheatsheet.sh
+```
+
+## Jalankan
+```bash
+bash ~/.ukk-cheatsheet.sh
+```
+
+### Pilih menu: 1
+
+### Harusnya sekarang:
+### ✅ Muncul "Loading guide..."
+### ✅ Muncul "Loaded: XX lines (XK)"
+### ✅ Nano terbuka DENGAN KONTEN LENGKAP!
+   
+   
    ╔══════════════════════════════════════════╗
 ## ║  CARA PAKAI ARNOLOKA UKK CHEATSHEET      ║
    ╚══════════════════════════════════════════╝
