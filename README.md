@@ -30,17 +30,10 @@ chmod +x ~/.ukk-cheatsheet.sh
 ```bash
 bash ~/.ukk-cheatsheet.sh
 ```
+---
 
-### Pilih menu: 1
-
-### Harusnya sekarang:
-### ✅ Muncul "Loading guide..."
-### ✅ Muncul "Loaded: XX lines (XK)"
-### ✅ Nano terbuka DENGAN KONTEN LENGKAP!
-   
-   
    ╔══════════════════════════════════════════╗
-## ║  CARA PAKAI ARNOLOKA UKK CHEATSHEET      ║
+## ║  CARA PAKAI ARNOLOKA UKK CHEATSHEET          ║
    ╚══════════════════════════════════════════╝
 
 ## 📌 INSTALL (Sekali saja):
