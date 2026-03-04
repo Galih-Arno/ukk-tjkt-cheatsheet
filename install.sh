@@ -1,7 +1,7 @@
 #!/bin/bash
 #############################################################################
-# 🚀 ARNOLOKA UKK Cheatsheet - Quick Installer (Auto-Run)
-# Usage: curl -sL arnoloka.dev/install | bash
+# 🚀 ARNO UKK Cheatsheet - Quick Installer (Auto-Run)
+# Usage: -
 #############################################################################
 
 SCRIPT_URL="https://raw.githubusercontent.com/Galih-Arno/ukk-tjkt-cheatsheet/main/cheatsheet.sh"
@@ -10,7 +10,7 @@ ALIAS_FILE="$HOME/.bash_aliases"
 
 echo ""
 echo -e "\033[0;32m╔══════════════════════════════════════════╗\033[0m"
-echo -e "\033[0;32m║\033[0m  \033[0;36mARNOLOKA UKK Installer\033[0m                \033[0;32m║\033[0m"
+echo -e "\033[0;32m║\033[0m  \033[0;36mARNO UKK Installer\033[0m                \033[0;32m║\033[0m"
 echo -e "\033[0;32m╚══════════════════════════════════════════╝\033[0m"
 echo ""
 echo "📥 Downloading..."
