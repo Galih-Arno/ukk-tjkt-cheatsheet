@@ -1,5 +1,5 @@
 #!/bin/bash
-# ARNOLOKA UKK Cheatsheet - SIMPLE WORKING VERSION
+# ARNO UKK Cheatsheet - SIMPLE WORKING VERSION
 
 REPO="https://raw.githubusercontent.com/Galih-Arno/ukk-tjkt-cheatsheet/main"
 CACHE="$HOME/.ukk-cache"
@@ -35,7 +35,7 @@ show_menu() {
     clear
     echo ""
     echo -e "${B}╔══════════════════════════════════════════╗${N}"
-    echo -e "${B}║${N}  ${G}ARNOLOKA UKK Cheatsheet${N}              ${B}║${N}"
+    echo -e "${B}║${N}  ${G}ARNO UKK Cheatsheet${N}              ${B}║${N}"
     echo -e "${B}╚══════════════════════════════════════════╝${N}"
     echo ""
     echo -e "${Y}🎯 ROUTER (MikroTik)${N}"
@@ -108,7 +108,7 @@ main() {
     # Welcome
     clear
     echo -e "${G}╔══════════════════════════════════════════╗${N}"
-    echo -e "${G}║${N}  ${B}ARNOLOKA UKK Cheatsheet${N}                ${G}║${N}"
+    echo -e "${G}║${N}  ${B}ARNO UKK Cheatsheet${N}                ${G}║${N}"
     echo -e "${G}╚══════════════════════════════════════════╝${N}"
     echo ""
     echo "Repo: github.com/Galih-Arno/ukk-tjkt-cheatsheet"
