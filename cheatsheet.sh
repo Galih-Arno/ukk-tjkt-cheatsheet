@@ -1,9 +1,9 @@
 #!/bin/bash
 #############################################################################
-# ARNOLOKA UKK Cheatsheet - FINAL VERSION (MD FILES)
-# Features: View guides → Extract commands → Edit in nano → Execute
+# ARNOLOKA UKK Cheatsheet - FINAL VERSION (FULL CONTENT SAVE)
+# Features: View guides → Save FULL content to file → Edit in nano → Copy
+# Saves COMPLETE guide with explanations (not just commands!)
 # No Mouse Required | No tmux Required | Pure CLI Keyboard Workflow
-# File Format: .md (Markdown)
 #############################################################################
 
 REPO="https://raw.githubusercontent.com/Galih-Arno/ukk-tjkt-cheatsheet/main"
@@ -41,26 +41,64 @@ get_file() {
     fi
 }
 
-# Extract commands from markdown content
-extract_commands() {
+# Clean markdown formatting for readable text
+clean_markdown() {
+    sed -e 's/^###* /  /g' \
+        -e 's/^##* /  /g' \
+        -e 's/\*\*\([^*]*\)\*\*/\1/g' \
+        -e 's/\*\([^*]*\)\*/\1/g' \
+        -e 's/^\`[^`]*\`//g' \
+        -e 's/\`[^`]*\`/\1/g' \
+        -e 's/^> /  │ /g' \
+        -e 's/^---*/═══════════════════════════════════════════/g' \
+        -e 's/^- /  • /g' \
+        -e '/^```/d' \
+        -e '/^$/d' | cat -s
+}
+
+# Save FULL content to file (with clean formatting)
+save_full_content() {
     local file=$1
     local output=$2
     
     # Create header
-    echo "#!/bin/bash" > "$output"
-    echo "# ARNOLOKA UKK - Commands Extracted" >> "$output"
-    echo "# Source: $file" >> "$output"
-    echo "# Generated: $(date)" >> "$output"
-    echo "# WARNING: Review before executing!" >> "$output"
-    echo "" >> "$output"
+    cat > "$output" << EOF
+#!/bin/bash
+# ═══════════════════════════════════════════
+# ARNOLOKA UKK - FULL GUIDE
+# ═══════════════════════════════════════════
+# Source: $file
+# Generated: $(date)
+# 
+# This file contains the COMPLETE guide with:
+#   ✓ Full explanations
+#   ✓ All commands
+#   ✓ Warnings & tips
+#   ✓ Troubleshooting
+#
+# HOW TO USE:
+#   1. Read in nano: nano $output
+#   2. Navigate: Arrow keys ↑↓←→
+#   3. Copy: Select text + Ctrl+Shift+C (in most terminals)
+#   4. Or: Ctrl+K to cut line, Ctrl+U to paste
+#   5. Exit: Ctrl+X
+#
+# To execute commands: Copy-paste individually
+# DO NOT run this file as script!
+# ═══════════════════════════════════════════
+
+EOF
     
-    # Extract command lines (filter markdown syntax)
-    get_file "$file" | grep -v "^#" | grep -v "^>" | grep -v "^|" | grep -v "^-" | grep -v "^$" | grep -v "^\`\`\`" | grep -E "(sudo|apt|systemctl|mysql|curl|wget|nano|chmod|chown|echo|mkdir|cat|touch|zcat|openssl|a2enmod|a2ensite|named-check|snmpwalk|zabbix_get|^ip |^ping |^nslookup |^dig |ufw )" >> "$output" 2>/dev/null
+    # Get content and clean markdown
+    get_file "$file" | clean_markdown >> "$output"
     
-    # If no commands extracted, get content without markdown
-    if [ ! -s "$output" ] || [ $(wc -l < "$output") -le 3 ]; then
-        get_file "$file" | sed 's/^#\+ //g' | sed 's/\*\*//g' | sed 's/\`//g' >> "$output"
-    fi
+    # Add footer
+    cat >> "$output" << EOF
+
+# ═══════════════════════════════════════════
+# END OF GUIDE
+# ═══════════════════════════════════════════
+EOF
     
     chmod +x "$output"
 }
@@ -104,10 +142,10 @@ show_menu() {
 }
 
 #############################################################################
-# VIEW & EXTRACT FUNCTIONS
+# VIEW & SAVE FUNCTIONS
 #############################################################################
 
-# View Content with Extract Option
+# View Content with Save Option
 view() {
     local file=$1
     local title=$2
@@ -138,22 +176,22 @@ view() {
     # Get and display content in less
     cat "$cached" | less -R
     
-    # After viewing, offer extract option
+    # After viewing, offer save option
     echo ""
-    echo -e "${C}[E]${N} Extract commands to file (for copy/edit)"
+    echo -e "${C}[S]${N} Save FULL guide to file (for copy/edit)"
     echo -e "${C}[Q]${N} Back to menu"
     echo ""
     echo -n "Pilih: "
     read opt
     
     case $opt in
-        [Ee]) extract_and_edit "$file" "$title" ;;
+        [Ss]) save_and_edit "$file" "$title" ;;
         *) ;;
     esac
 }
 
-# Extract Commands & Open in Nano
-extract_and_edit() {
+# Save Full Content & Open in Nano
+save_and_edit() {
     local file=$1
     local title=$2
     
@@ -162,30 +200,38 @@ extract_and_edit() {
     local output="$HOME/ukk-${basename}.sh"
     
     echo ""
-    echo -e "${G}📥 Extracting commands...${N}"
+    echo -e "${G}📥 Saving FULL guide...${N}"
     
-    # Extract commands
-    extract_commands "$file" "$output"
+    # Save full content
+    save_full_content "$file" "$output"
     
     if [ -s "$output" ]; then
+        local lines=$(wc -l < "$output")
         echo -e "${G}✅ Saved to: $output${N}"
+        echo -e "${G}   Total lines: $lines${N}"
         echo ""
         echo -e "${Y}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${N}"
         echo -e "${Y}  WHAT DO YOU WANT TO DO?${N}"
         echo -e "${Y}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${N}"
         echo ""
-        echo -e "${C}[E]${N} Edit in nano (review/copy commands)"
-        echo -e "${C}[X]${N} Execute directly (⚠️ DANGEROUS!)"
+        echo -e "${C}[E]${N] Edit in nano (read & copy commands)${N}"
         echo -e "${C}[V]${N} View content in less"
         echo -e "${C}[C]${N} Copy to clipboard file (~/ukk-copy.txt)"
+        echo -e "${C}[I]${N} Info about this file"
         echo -e "${C}[Q]${N} Back to menu"
         echo ""
         echo -e "${R}Keyboard Navigation in nano:${N}"
-        echo "  ↑↓←→ : Move cursor"
-        echo "  Ctrl+K : Cut line"
-        echo "  Ctrl+U : Paste cut line"
-        echo "  Ctrl+X : Exit (will ask to save)"
-        echo "  Ctrl+O : Save file"
+        echo "  ↑↓←→     : Move cursor"
+        echo "  PageUp/Dn: Scroll page"
+        echo "  Ctrl+Home: Go to top"
+        echo "  Ctrl+End : Go to bottom"
+        echo "  Ctrl+K   : Cut line"
+        echo "  Ctrl+U   : Paste cut line"
+        echo "  Ctrl+X   : Exit (will ask to save)"
+        echo "  Ctrl+O   : Save file"
+        echo "  Ctrl+W   : Search text"
+        echo ""
+        echo -e "${G}Tip: Use nano to read & select commands to copy!${N}"
         echo ""
         echo -n "Pilih: "
         read action
@@ -194,60 +240,38 @@ extract_and_edit() {
             [Ee])
                 clear
                 echo -e "${G}═══════════════════════════════════════════${N}"
-                echo -e "${G}  NANO EDIT MODE${N}"
+                echo -e "${G}  NANO EDIT MODE - FULL GUIDE${N}"
                 echo -e "${G}═══════════════════════════════════════════${N}"
                 echo ""
                 echo "File: $output"
+                echo "Lines: $lines"
                 echo ""
                 echo -e "${Y}Instructions:${N}"
-                echo "  • Navigate: Arrow keys ↑↓←→"
-                echo "  • Select: Shift+Arrow (if terminal supports)"
-                echo "  • Copy: Ctrl+Shift+C (in most terminals)"
-                echo "  • Cut line: Ctrl+K"
-                echo "  • Paste: Ctrl+U"
-                echo "  • Save: Ctrl+O → Enter"
-                echo "  • Exit: Ctrl+X"
+                echo "  1. Navigate: Arrow keys ↑↓←→"
+                echo "  2. Scroll: PageUp/PageDown"
+                echo "  3. Go to top: Ctrl+Home"
+                echo "  4. Go to bottom: Ctrl+End"
+                echo "  5. Search: Ctrl+W, type keyword, Enter"
+                echo "  6. Select: Shift+Arrow (if terminal supports)"
+                echo "  7. Copy: Ctrl+Shift+C (in most terminals)"
+                echo "  8. Cut line: Ctrl+K"
+                echo "  9. Paste: Ctrl+U"
+                echo "  10. Exit: Ctrl+X"
                 echo ""
-                echo -e "${R}  Tip: Comment out dangerous lines with #${N}"
+                echo -e "${R}  This file contains the COMPLETE guide!${N}"
+                echo -e "${R}  Read carefully and copy commands as needed.${N}"
                 echo ""
                 echo -n "Press Enter to open nano..."
                 read dummy
                 nano "$output"
                 echo ""
                 echo -e "${G}Edit complete! File saved at: $output${N}"
-                echo "Run with: bash $output"
+                echo ""
+                echo -e "${Y}To view again: nano $output${N}"
+                echo -e "${Y}To search: Ctrl+W in nano, type keyword${N}"
                 echo ""
                 echo -n "Press Enter to continue..."
                 read dummy
-                ;;
-            [Xx])
-                echo ""
-                echo -e "${R}╔═══════════════════════════════════════════╗${N}"
-                echo -e "${R}║  ⚠️  WARNING: EXECUTE ALL COMMANDS?  ⚠️  ${N}"
-                echo -e "${R}╚═══════════════════════════════════════════╝${N}"
-                echo ""
-                echo "File: $output"
-                echo ""
-                echo "Preview first 5 lines:"
-                head -5 "$output"
-                echo "..."
-                echo ""
-                read -p "Are you SURE? Type 'YES' to confirm: " confirm
-                if [ "$confirm" = "YES" ]; then
-                    echo ""
-                    echo -e "${G}Executing...${N}"
-                    bash "$output"
-                    echo ""
-                    echo -e "${G}Execution complete!${N}"
-                    echo ""
-                    echo -n "Press Enter to continue..."
-                    read dummy
-                else
-                    echo -e "${Y}Cancelled.${N}"
-                    echo ""
-                    echo -n "Press Enter to continue..."
-                    read dummy
-                fi
                 ;;
             [Vv])
                 echo ""
@@ -263,12 +287,36 @@ extract_and_edit() {
                 echo -n "Press Enter to continue..."
                 read dummy
                 ;;
+            [Ii])
+                echo ""
+                echo -e "${G}═══════════════════════════════════════════${N}"
+                echo -e "${G}  FILE INFORMATION${N}"
+                echo -e "${G}═══════════════════════════════════════════${N}"
+                echo ""
+                echo "Source: $file"
+                echo "Output: $output"
+                echo "Lines: $lines"
+                echo "Size: $(du -h "$output" | cut -f1)"
+                echo "Created: $(date -r "$output")"
+                echo ""
+                echo "This file contains:"
+                echo "  ✓ Full guide with explanations"
+                echo "  ✓ All commands with context"
+                echo "  ✓ Warnings & troubleshooting"
+                echo "  ✓ Formatted for easy reading"
+                echo ""
+                echo "NOT a script to execute!"
+                echo "Use nano to read and copy commands manually."
+                echo ""
+                echo -n "Press Enter to continue..."
+                read dummy
+                ;;
             *)
                 echo -e "${Y}Back to menu.${N}"
                 ;;
         esac
     else
-        echo -e "${R}❌ Failed to extract commands!${N}"
+        echo -e "${R}❌ Failed to save content!${N}"
         echo ""
         echo -n "Press Enter to continue..."
         read dummy
@@ -318,9 +366,10 @@ main() {
     echo ""
     echo -e "${Y}Features:${N}"
     echo "  ✓ View guides in less"
-    echo "  ✓ Extract commands to editable file"
+    echo "  ✓ Save FULL guide to editable file"
+    echo "  ✓ Complete with explanations & warnings"
     echo "  ✓ Edit in nano (keyboard-friendly)"
-    echo "  ✓ Execute or copy commands"
+    echo "  ✓ Copy commands manually (safe!)"
     echo "  ✓ No mouse required!"
     echo ""
     echo -e "${Y}Press Enter to start...${N}"
