@@ -12,7 +12,7 @@ sudo apt update
 sudo apt install apache2 -y
 
 # Test default page:
-curl http://localhost
+# curl http://localhost
 # Harus return HTML Apache default
 # ───────────────────────────────────────
 
@@ -69,7 +69,7 @@ curl -k https://www.lab-smk.xyz | head -5
 # Harus return HTML
 # ───────────────────────────────────────
 
-# 6. OPTIONAL: GANTI DEFAULT PAGE
+# 6. OPTIONAL: GANTI DEFAULT PAGE APACHE2nya
 # ───────────────────────────────────────
 # Edit default page:
 sudo nano /var/www/html/index.html
