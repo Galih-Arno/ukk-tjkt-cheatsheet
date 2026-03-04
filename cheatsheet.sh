@@ -1,7 +1,7 @@
 #!/bin/bash
 #############################################################################
-# 📘 ARNOLOKA UKK TJKT 2026 - Interactive Cheatsheet (FINAL VERSION)
-# Features: Clean output, Auto-run, Offline cache
+# Galih Gratia Arno UKK Cheatsheet - SUPER STABLE VERSION
+# Fixed: Input handling, Clean markdown output
 #############################################################################
 
 REPO="https://raw.githubusercontent.com/Galih-Arno/ukk-tjkt-cheatsheet/main"
@@ -16,7 +16,7 @@ R='\033[0;31m'
 C='\033[0;36m'
 N='\033[0m'
 
-# Strip Markdown Formatting (Clean Output)
+# Strip Markdown
 strip_md() {
     sed -e 's/^###* //' \
         -e 's/^##* //' \
@@ -27,12 +27,10 @@ strip_md() {
         -e 's/^---*$//' \
         -e 's/^> //' \
         -e '/^```/,/^```/d' \
-        -e 's/^- /  • /g' \
-        -e '/^$/d' | \
-    cat -s
+        -e 's/^- /  • /g' | cat -s
 }
 
-# Get File (Online/Offline)
+# Get File
 get_file() {
     local file=$1
     local cached="$CACHE/$(echo $file | tr '/' '_')"
@@ -88,7 +86,8 @@ view() {
         echo -e "${Y}💡 /keyword=search | q=quit | Enter=back${N}"
     fi
     echo ""
-    read -p "Press Enter..." dummy
+    printf "Press Enter..."
+    read dummy
 }
 
 # Update Cache
@@ -96,46 +95,56 @@ update_cache() {
     echo ""
     echo -e "${G}🔄 Downloading all files...${N}"
     for f in README.md router/01-vlan-ip.md router/02-dhcp-nat.md router/03-firewall.md switch/01-bridge-vlan.md server/01-netplan.md server/02-dns-bind9.md server/03-web-https.md server/04-zabbix-setup.md testing/01-verify-commands.md; do
-        echo -n "  $f... "
+        printf "  $f... "
         curl -sf "$REPO/$f" -o "$CACHE/$(echo $f | tr '/' '_')" 2>/dev/null && echo -e "${G}OK${N}" || echo -e "${R}FAIL${N}"
     done
     echo -e "${G}✅ Done! Cache: $CACHE${N}"
     echo ""
-    read -p "Press Enter..." dummy
+    printf "Press Enter..."
+    read dummy
 }
 
-# Welcome
-clear
-echo -e "${G}╔══════════════════════════════════════════╗${N}"
-echo -e "${G}║${N}  ${C}ARNOLOKA UKK Cheatsheet${N}                ${G}║${N}"
-echo -e "${G}╚══════════════════════════════════════════╝${N}"
-echo ""
-echo "Repo: github.com/Galih-Arno/ukk-tjkt-cheatsheet"
-echo ""
-read -p "Press Enter to start..." dummy
-
-# Main Loop
-while true; do
+# MAIN FUNCTION
+main() {
+    # Welcome
     clear
-    show_menu
-    echo -n -e "${G}➤ Menu: ${N}"
-    read choice
-    choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')
+    echo -e "${G}╔══════════════════════════════════════════╗${N}"
+    echo -e "${G}║${N}  ${C}ARNOLOKA UKK Cheatsheet${N}                ${G}║${N}"
+    echo -e "${G}╚══════════════════════════════════════════╝${N}"
+    echo ""
+    echo "Repo: github.com/Galih-Arno/ukk-tjkt-cheatsheet"
+    echo ""
+    printf "Press Enter to start..."
+    read dummy
     
-    case "$choice" in
-        1) view "router/01-vlan-ip.md" "Router: VLAN & IP" ;;
-        2) view "router/02-dhcp-nat.md" "Router: DHCP & NAT" ;;
-        3) view "router/03-firewall.md" "Router: Firewall" ;;
-        4) view "switch/01-bridge-vlan.md" "Switch: Bridge VLAN" ;;
-        5) view "server/01-netplan.md" "Server: Netplan" ;;
-        6) view "server/02-dns-bind9.md" "Server: DNS Bind9" ;;
-        7) view "server/03-web-https.md" "Server: Apache HTTPS" ;;
-        8) view "server/04-zabbix-setup.md" "Server: Zabbix" ;;
-        9) view "testing/01-verify-commands.md" "Testing" ;;
-        a) view "docs/kebijakan-keamanan.md" "Kebijakan Keamanan" ;;
-        b) view "docs/troubleshooting.md" "Troubleshooting" ;;
-        u) update_cache ;;
-        q) clear; echo -e "${G}🚀 Good luck UKK!${N}\n"; exit 0 ;;
-        *) echo -e "${R}Invalid!${N}"; sleep 1 ;;
-    esac
-done
+    # Main Loop
+    while true; do
+        clear
+        show_menu
+        printf "${G}➤ Menu: ${N}"
+        read choice
+        
+        # Normalize input
+        choice=$(echo "$choice" | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')
+        
+        case "$choice" in
+            1) view "router/01-vlan-ip.md" "Router: VLAN & IP" ;;
+            2) view "router/02-dhcp-nat.md" "Router: DHCP & NAT" ;;
+            3) view "router/03-firewall.md" "Router: Firewall" ;;
+            4) view "switch/01-bridge-vlan.md" "Switch: Bridge VLAN" ;;
+            5) view "server/01-netplan.md" "Server: Netplan" ;;
+            6) view "server/02-dns-bind9.md" "Server: DNS Bind9" ;;
+            7) view "server/03-web-https.md" "Server: Apache HTTPS" ;;
+            8) view "server/04-zabbix-setup.md" "Server: Zabbix" ;;
+            9) view "testing/01-verify-commands.md" "Testing" ;;
+            a) view "docs/kebijakan-keamanan.md" "Kebijakan Keamanan" ;;
+            b) view "docs/troubleshooting.md" "Troubleshooting" ;;
+            u) update_cache ;;
+            q) clear; echo -e "${G}🚀 Good luck UKK!${N}\n"; exit 0 ;;
+            *) echo -e "${R}Invalid!${N}"; sleep 1 ;;
+        esac
+    done
+}
+
+# Run main
+main
