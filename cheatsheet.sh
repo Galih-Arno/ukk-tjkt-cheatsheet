@@ -1,8 +1,5 @@
 #!/bin/bash
-#############################################################################
-# Galih Gratia Arno UKK Cheatsheet - SUPER STABLE VERSION
-# Fixed: Input handling, Clean markdown output
-#############################################################################
+# ARNOLOKA UKK Cheatsheet - SIMPLE WORKING VERSION
 
 REPO="https://raw.githubusercontent.com/Galih-Arno/ukk-tjkt-cheatsheet/main"
 CACHE="$HOME/.ukk-cache"
@@ -13,38 +10,33 @@ G='\033[0;32m'
 Y='\033[1;33m'
 B='\033[0;34m'
 R='\033[0;31m'
-C='\033[0;36m'
 N='\033[0m'
 
-# Strip Markdown
-strip_md() {
-    sed -e 's/^###* //' \
-        -e 's/^##* //' \
-        -e 's/\*\*\([^*]*\)\*\*/\1/g' \
-        -e 's/\*\([^*]*\)\*/\1/g' \
-        -e 's/^\`[^`]*\`//' \
-        -e 's/\`[^`]*\`/\1/g' \
-        -e 's/^---*$//' \
-        -e 's/^> //' \
-        -e '/^```/,/^```/d' \
-        -e 's/^- /  • /g' | cat -s
-}
-
-# Get File
+# Get file from GitHub or cache
 get_file() {
     local file=$1
     local cached="$CACHE/$(echo $file | tr '/' '_')"
-    curl -sf "$REPO/$file" -o "$cached" 2>/dev/null && cat "$cached" && return 0
-    [ -f "$cached" ] && cat "$cached" && return 0
-    return 1
+    
+    # Download if not exists or older than 1 hour
+    if [ ! -f "$cached" ] || [ $(find "$cached" -mmin +60 2>/dev/null) ]; then
+        curl -sf "$REPO/$file" -o "$cached" 2>/dev/null
+    fi
+    
+    # Display content (NO strip_md - show raw markdown)
+    if [ -s "$cached" ]; then
+        cat "$cached"
+    else
+        echo -e "${R}Error: Cannot load $file${N}"
+    fi
 }
 
 # Show Menu
 show_menu() {
+    clear
     echo ""
-    echo -e "${C}╔══════════════════════════════════════════╗${N}"
-    echo -e "${C}║${N}  ${G}Arno Akan Membantu Kamu Bitch${N}              ${C}║${N}"
-    echo -e "${C}╚══════════════════════════════════════════╝${N}"
+    echo -e "${B}╔══════════════════════════════════════════╗${N}"
+    echo -e "${B}║${N}  ${G}ARNOLOKA UKK Cheatsheet${N}              ${B}║${N}"
+    echo -e "${B}╚══════════════════════════════════════════╝${N}"
     echo ""
     echo -e "${Y}🎯 ROUTER (MikroTik)${N}"
     echo "  [1] VLAN & IP Address"
@@ -68,7 +60,7 @@ show_menu() {
     echo "  [B] Troubleshooting"
     echo ""
     echo "──────────────────────────────────────"
-    echo -e "${C}[U]${N} Update  ${C}[Q]${N} Quit"
+    echo -e "${B}[U]${N} Update  ${B}[Q]${N} Quit"
     echo ""
 }
 
@@ -76,52 +68,57 @@ show_menu() {
 view() {
     local file=$1
     local title=$2
+    
     echo ""
     echo -e "${B}══════════════════════════════════════════${N}"
     echo -e "${B}  $title${N}"
     echo -e "${B}══════════════════════════════════════════${N}"
     echo ""
-    if get_file "$file" | strip_md | less -R; then
-        echo ""
-        echo -e "${Y}💡 /keyword=search | q=quit | Enter=back${N}"
-    fi
+    
+    # Get and display content directly
+    get_file "$file" | less -R
+    
     echo ""
-    printf "Press Enter..."
+    echo -e "${Y}Press Enter to continue...${N}"
     read dummy
 }
 
-# Update Cache
+# Update All Cache
 update_cache() {
     echo ""
-    echo -e "${G}🔄 Downloading all files...${N}"
+    echo -e "${G}🔄 Updating all files...${N}"
+    
     for f in README.md router/01-vlan-ip.md router/02-dhcp-nat.md router/03-firewall.md switch/01-bridge-vlan.md server/01-netplan.md server/02-dns-bind9.md server/03-web-https.md server/04-zabbix-setup.md testing/01-verify-commands.md; do
-        printf "  $f... "
-        curl -sf "$REPO/$f" -o "$CACHE/$(echo $f | tr '/' '_')" 2>/dev/null && echo -e "${G}OK${N}" || echo -e "${R}FAIL${N}"
+        printf "  %-30s " "$f"
+        if curl -sf "$REPO/$f" -o "$CACHE/$(echo $f | tr '/' '_')" 2>/dev/null; then
+            echo -e "${G}OK${N}"
+        else
+            echo -e "${R}FAIL${N}"
+        fi
     done
-    echo -e "${G}✅ Done! Cache: $CACHE${N}"
+    
+    echo -e "\n${G}✅ Done!${N}"
     echo ""
-    printf "Press Enter..."
+    echo -e "${Y}Press Enter to continue...${N}"
     read dummy
 }
 
-# MAIN FUNCTION
+# MAIN LOOP
 main() {
     # Welcome
     clear
     echo -e "${G}╔══════════════════════════════════════════╗${N}"
-    echo -e "${G}║${N}  ${C}ARNOLOKA UKK Cheatsheet${N}                ${G}║${N}"
+    echo -e "${G}║${N}  ${B}ARNOLOKA UKK Cheatsheet${N}                ${G}║${N}"
     echo -e "${G}╚══════════════════════════════════════════╝${N}"
     echo ""
     echo "Repo: github.com/Galih-Arno/ukk-tjkt-cheatsheet"
     echo ""
-    printf "Press Enter to start..."
+    echo -e "${Y}Press Enter to start...${N}"
     read dummy
     
-    # Main Loop
     while true; do
-        clear
         show_menu
-        printf "${G}➤ Menu: ${N}"
+        echo -ne "${G}➤ Menu: ${N}"
         read choice
         
         # Normalize input
@@ -146,5 +143,5 @@ main() {
     done
 }
 
-# Run main
+# Run
 main
