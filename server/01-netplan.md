@@ -12,8 +12,8 @@
 ip a
 
 # Output contoh:
-    2: enp0s25: <BROADCAST,MULTICAST,UP,LOWER_UP>
-       inet 192.168.30.10/24 ...
+#    2: enp0s25: <BROADCAST,MULTICAST,UP,LOWER_UP>
+#       inet 192.168.30.10/24 ...
 
 # Catat nama interface (misal: enp0s25)
 # ───────────────────────────────────────
