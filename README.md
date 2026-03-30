@@ -1,7 +1,7 @@
 # 📘 Cloud Cheatsheet
 
 > Interactive CLI UKK By Galih Gratia Arno  
-> Access: TERMINAL/CLI (LINUX), POWERSHELL/WSL (WINDOWS)
+> Access: TERMINAL/CLI (LINUX), GIT BASH (WINDOWS)
 
 ## Download Jika Menggunakan Git Bash Pada Windows
 ```bash
