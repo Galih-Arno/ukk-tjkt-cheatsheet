@@ -3,32 +3,19 @@
 > Interactive CLI UKK By Galih Gratia Arno  
 > Access: TERMINAL/CLI (LINUX), POWERSHELL/WSL (WINDOWS)
 
-## 🚀 Quick Install
-
-```bash
-curl -sL https://arno-ukk.vercel.app/cheatsheet.sh -o ~/.ukk-cheatsheet.sh
-chmod +x ~/.ukk-cheatsheet.sh
-bash ~/.ukk-cheatsheet.sh
-```
-
-## Hapus versi lama dan cache
-```bash
-rm -f ~/.ukk-cheatsheet.sh
-rm -rf ~/.ukk-work
-```
-## Download versi baru
+## Download Jika Menggunakan Git Bash Pada Windows
 ```bash
 curl -sL https://arno-ukk.vercel.app/cheatsheet.sh -o ~/.ukk-cheatsheet.sh
 ```
 
 ## Make executable
 ```bash
-chmod +x ~/.ukk-cheatsheet.sh
+chmod +x /c/Users/asus/.ukk-cheatsheet.sh
 ```
 
 ## Jalankan
 ```bash
-bash ~/.ukk-cheatsheet.sh
+./.ukk-cheatsheet.sh
 ```
 ---
 
