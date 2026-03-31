@@ -109,7 +109,7 @@ show_menu() {
     echo -e "${Y}🎯 ROUTER (MikroTik)${N}"
     echo "  [1] VLAN & IP Address"
     echo "  [2] DHCP, NAT & Internet"
-    echo -e "  [3] ${R}🔥 Firewall (LENGKAP)${N}"
+    echo -e "  [3] ${R}🔥 Firewall (LENGKAP - KHUSUS MENU [3] DILAKUKAN PALING AKHIR SAJA.)${N}"
     echo ""
     echo -e "${Y}🔄 SWITCH (MikroTik)${N}"
     echo "  [4] Bridge VLAN Filtering"
