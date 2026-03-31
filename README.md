@@ -5,17 +5,17 @@
 
 ## Download Jika Menggunakan Git Bash Pada Windows
 ```bash
-curl -sL https://arno-ukk.vercel.app/cheatsheet.sh -o /c/Users/asus/.ukk-cheatsheet.sh
+curl -sL https://arno-ukk.vercel.app/cheatsheet.sh -o cheatsheet.sh
 ```
 
 ## Make executable
 ```bash
-chmod +x /c/Users/asus/.ukk-cheatsheet.sh
+chmod +x cheatsheet.sh
 ```
 
 ## Jalankan
 ```bash
-./.ukk-cheatsheet.sh
+./cheatsheet.sh
 ```
 ---
 
