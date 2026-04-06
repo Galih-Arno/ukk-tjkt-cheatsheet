@@ -24,33 +24,38 @@
 # FIREWALL FILTER RULES (COPY-PASTE URUTAN INI!)
 # ───────────────────────────────────────
 
-/ip firewall filter
+SETTING ETHER 3 DI ROUTER2 (menambahkan firewall security)
+- ip firewall – filter rules (+) – chain(input) – connection state(estabilised,related) 
+action(accept)
 
-# 1. ALLOW ESTABLISHED/RELATED (PALING ATAS - WAJIB!)
-add chain=forward connection-state=established,related action=accept comment="Allow Established"
-add chain=input connection-state=established,related action=accept comment="Allow Input Established"
+- ip firewall – filter rules (+) – chain(forward) – connection state(estabilised,related) 
+action(accept)
 
-# 2. ISOLASI VLAN (Soal 4a & 4b)
-add chain=forward src-address=192.168.20.0/24 dst-address=192.168.10.0/24 action=drop comment="Block Siswa ke Guru"
-add chain=forward src-address=192.168.30.0/24 dst-address=192.168.10.0/24 action=accept comment="Allow Server ke Guru"
+- chain(input) – connection state(invalid) action(drop)
+- chain(forward) – connection state(invalid) action(drop)
+  
+- Chain(forward) - src-address(192.168.20.0/24) – dst-address(192.168.10.0/24) action 
+(drop) – comment (block vlan 20 to vlan10)
+- Chain(forward) - src-address(192.168.30.0/24) – dst-address(192.168.10.0/24) action 
+(accept) – comment (allow vlan 30 to vlan10)
 
-# 3. ANTI BRUTE FORCE (Soal 4c)
-add chain=input protocol=tcp dst-port=22,8291 connection-state=new src-address-list=!allowed_ips action=add-src-to-address-list address-list=blacklist timeout=1h comment="Anti Brute Force"
-add chain=input src-address-list=blacklist action=drop comment="Drop Blacklist"
+- Chain (input) - src-address(192.168.10.0/24) - protocol(tcp) - dst-port(22,8291) -
+action(accept)
+- Chain (input) - src-address(192.168.30.0/24) - protocol(tcp) - dst-port(22,8291) -
+action(accept)
+- Chain (input)) - protocol(tcp) - dst-port(22,8291) -action(drop)
+- Chain (input)- protocol(tcp) - dst-port(22,8291)-src-address-list(bf_blacklist) – action (drop)
+  
+- Chain (input)- protocol(tcp) - dst-port(22,8291)-connection-state (new) – action (add-src-to-
+addres-list- addres-list(bf_stage1) – addres-list-timeout(00:01:00)
 
-# 4. LOGGING AKTIVITAS PENTING (Soal 4d)
-add chain=forward action=log log-prefix="FWD-DROP " disabled=no comment="Log Forward Drop"
-add chain=input action=log log-prefix="INPUT-DROP " disabled=no comment="Log Input Drop"
+- Chain (input)- protocol(tcp) - dst-port(22,8291)-src-address-list(bf_stage1) – action (add-src-
+to-addres-list- addres-list(bf_stage2) – addres-list-timeout(00:01:00)
 
-# 5. SECURE MANAGEMENT ACCESS (Soal 4e)
-add chain=input src-address=192.168.10.0/24 protocol=tcp dst-port=22,8291 action=accept comment="Allow VLAN 10 Mgmt"
-add chain=input src-address=192.168.30.0/24 protocol=tcp dst-port=22,8291 action=accept comment="Allow VLAN 30 Mgmt"
-add chain=input protocol=tcp dst-port=22,8291 action=drop comment="Drop Others Mgmt"
+- Chain (input)- protocol(tcp) - dst-port(22,8291)-src-address-list(bf_stage2) – action (add-src-
+to-addres-list- addres-list(bf_blacklist) – addres-list-timeout(24:00:00
 
-# 6. ALLOW SNMP DARI SERVER (Untuk Zabbix)
-add chain=input src-address=192.168.30.10/32 protocol=udp dst-port=161 action=accept comment="Allow SNMP from Zabbix"
 
-# ───────────────────────────────────────
 
 # VERIFIKASI FIREWALL
 # ───────────────────────────────────────
