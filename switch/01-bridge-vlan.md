@@ -72,7 +72,7 @@ add bridge=bridge1 tagged=ether1,bridge1 vlan-ids=30 comment="VLAN 30 Trunk + CP
 #    management IP tidak akan reachable!
 # ───────────────────────────────────────
 
-# 5. IP MANAGEMENT & SNMP
+# 5. IP MANAGEMENT 
 # ───────────────────────────────────────
 
 # IP Management di VLAN 30:
@@ -87,17 +87,7 @@ add gateway=192.168.30.1 distance=1 comment="To Router"
 /ip dns
 set servers=192.168.30.10,8.8.8.8 allow-remote-requests=no
 
-# SNMP untuk Zabbix:
-/snmp
-set enabled=yes contact="Admin UKK" location="Lab SMK"
-
-/snmp community
-set [find name=public] disabled=yes
-add name="zabbix-monitor" address=192.168.30.10/32 security=authorized read-access=yes
-# ───────────────────────────────────────
-
-# 6. VERIFIKASI SWITCH
-# ───────────────────────────────────────
+───────────────────────────────────────
 # Cek bridge VLAN table:
 /interface bridge vlan print
 
