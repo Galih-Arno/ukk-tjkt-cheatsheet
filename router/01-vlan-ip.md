@@ -12,8 +12,12 @@
 # Login ulang: admin / (kosong)
 # Set identitas
 /system identity set name="Router-UKK"
-/user password
-# _______________________________________
+
+
+# Buat IP Address Ether1 SESUAI ABSENSI 
+/ip address=192.168.1.1xx/24 interface=ether1 
+
+_______________________________________
 
 # 2. VLAN INTERFACE
 # ───────────────────────────────────────
