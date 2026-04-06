@@ -118,7 +118,7 @@ show_menu() {
     echo "  [5] Netplan (Gateway!)"
     echo "  [6] DNS Bind9"
     echo "  [7] Apache HTTPS"
-    echo -e "  [8] ${G}📊 Zabbix 7.0${N}"
+    echo -e "  [8] ${G}📊 LANGKAH TERAKHIR${N}"
     echo ""
     echo -e "${Y}🧪 TESTING${N}"
     echo "  [9] Test Commands"
